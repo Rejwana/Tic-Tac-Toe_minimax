@@ -7,6 +7,7 @@
 
 
 #include <iostream>
+#include <list>
 
 using namespace std;
 class Move;
@@ -37,7 +38,7 @@ public:
     
     friend bool chkgameover(Board &b);
     //friend void empty_cells(Board &b, int &row, int &col);
-    friend Move* legal_moves(Board &b);
+    friend list<Move> legal_moves(Board &b);
     friend int minimax(Board &b,char mark);
     
 };
@@ -48,7 +49,13 @@ class Move
 public:
     
     int row,col;
-    Move *next;
+public:
+    void set_move(int x, int y)
+    {
+        row=x;
+        col=y;
+    }
+    //Move *next;
 };
 
 
@@ -191,34 +198,19 @@ bool chkgameover(Board &b)
 
 
 //list of legal moves
-Move* legal_moves(Board &b)
+list<Move> legal_moves(Board &b)
 {
-    Move* move_list;
-    move_list=NULL;
-    Move* last_move, *new_move;
-
-    for(int i=0;i<3;i++)
+    list<Move> move_list;
+    Move new_move;
+    for (int i=0;i<3;i++)
         for(int j=0;j<3;j++)
-        {
             if(b.position[i][j]==' ')
             {
-                new_move = new Move;
-                new_move->row=i;
-                new_move->col=j;
-                new_move->next=NULL;
-                
-                if(move_list==NULL)
-                {
-                    move_list=new_move;
-                    last_move=move_list;
-                }
-                else
-                    last_move->next=new_move;
-                last_move=new_move;
-                
+                new_move.set_move(i,j);
+                move_list.push_back(new_move);
             }
-        }
     return move_list;
+    
 }
 
 int minimax(Board &b,char mark, Move &best_move)
@@ -226,7 +218,8 @@ int minimax(Board &b,char mark, Move &best_move)
     int best_value; //holds the best possible outcome from current position
     
     //b.show_board();
-    Move *move_list;
+    list <Move> move_list;
+    Move new_move;
 
     
     //if terminal position is reached return the board value
@@ -246,9 +239,11 @@ int minimax(Board &b,char mark, Move &best_move)
         best_value=(mark=='x')?-10:10;
         
         //check all legal moves
-        while (move_list!=NULL) {
+        //while (move_list!=NULL)
+        while(move_list.size()> 0){
             Board new_board = b;
-            new_board.set_mark(mark, move_list->row, move_list->col);
+            new_move = move_list.front();
+            new_board.set_mark(mark, new_move.row, new_move.col);
             
             //max player
             if(mark=='x')
@@ -259,7 +254,7 @@ int minimax(Board &b,char mark, Move &best_move)
                 if(new_board.value>best_value)
                 {
                     best_value=new_board.value;
-                    best_move = *move_list;
+                    best_move = new_move;
                 }
             }
             
@@ -271,14 +266,14 @@ int minimax(Board &b,char mark, Move &best_move)
                 if(new_board.value<best_value)
                 {
                     best_value=new_board.value;
-                    best_move = *move_list;
+                    best_move = new_move;
                 }
             }
             
             //cout<<"new board value"<<new_board.value<<"best value"<<best_value<<"mark"<<mark<<endl;
             
-            //go to the next move to check
-            move_list=move_list->next;
+            //remove checked move from list
+            move_list.pop_front();
         }
         b.value = best_value;
         
