@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <list>
+#include <algorithm>
 
 using namespace std;
 class Move;
@@ -122,7 +123,7 @@ void play(Board &b, char mark, Move *best_move=NULL)
 //check if leaf node
 bool chkgameover(Board &b)
 {
-    bool allCellMarked=true; // check if all cells are played
+    //bool allCellMarked=true; // check if all cells are played
     
     //diagonal win
     
@@ -174,25 +175,21 @@ bool chkgameover(Board &b)
         }
     }
     
-    //check if all cells are marked
-    for(int row=0;row<3;row++)
-        for(int col=0;col<3;col++)
-        {
-            if(b.position[row][col]==' ')
-                allCellMarked= false;
-        }
+
     
-    //draw
-    if (allCellMarked==true)
+
+
+    //check if all cells are marked
+    if (all_of(&b.position[0][0], &b.position[2][2], [](char x){return x!=' ';}))
     {
         b.value=0;
         return true;
     }
-
     else
     {
         return false;
     }
+
 
 }
 
