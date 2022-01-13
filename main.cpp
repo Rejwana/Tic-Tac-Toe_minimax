@@ -179,7 +179,7 @@ bool chkgameover(Board &b)
     
 
 
-    //check if all cells are marked
+    //if all cells are marked without any player win, that's a draw
     if (all_of(&b.position[0][0], &b.position[2][2], [](char x){return x!=' ';}))
     {
         b.value=0;
