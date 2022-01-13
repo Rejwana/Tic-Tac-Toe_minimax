@@ -96,14 +96,17 @@ void Board::set_mark(char mark, int row, int col)
 void play(Board &b, char mark, Move *best_move=NULL)
 {
     int row,col;
+    //if human player best_move is not passed to this function
     if(best_move==NULL)
     {
         
-        cout<<"select row:";
+        cout<<"select row (1 to 3):";
         cin>>row;
-        row--;
-        cout<<"select clo:";
+        cout<<"select clo (1 to 3):";
         cin>>col;
+        
+        //interfacing with human indexing system 1:3
+        row--;
         col--;
         
     }
@@ -112,15 +115,20 @@ void play(Board &b, char mark, Move *best_move=NULL)
         col = best_move->col;
     }
     
-    
-    
     b.set_mark(mark, row,col);
-    
-    
 }
 
+//set the board value for terminal non drawing positions
+void setBoardvalue(Board &b, char mark)
+{
+    if(mark== 'x')
+        b.value=1;
+    else
+        b.value=-1;
+        
+}
 
-//check if leaf node
+//check return true if game over. i.e. any side wins or all cell are marked
 bool chkgameover(Board &b)
 {
     //bool allCellMarked=true; // check if all cells are played
@@ -129,20 +137,12 @@ bool chkgameover(Board &b)
     
     if(b.position[0][0]==b.position[1][1] && b.position[1][1] ==b.position[2][2]&&b.position[0][0]!= ' ')
     {
-        if(b.position[0][0]== 'x')
-            b.value=1;
-        else
-            b.value=-1;
-
+        setBoardvalue(b, b.position[0][0]);
         return true;
     }
     else if(b.position[0][2]==b.position[1][1] && b.position[1][1]==b.position[2][0] && b.position[0][2]!=' ')
     {
-        if(b.position[0][2]== 'x')
-            b.value=1;
-        else
-            b.value=-1;
-
+        setBoardvalue(b, b.position[0][2]);
         return true;
     }
     
@@ -154,22 +154,13 @@ bool chkgameover(Board &b)
             //row win
             if(b.position[i][0]==b.position[i][1] && b.position[i][1]==b.position[i][2] && b.position[i][0]!=' ')
             {
-                if(b.position[i][0]== 'x')
-                    b.value=1;
-                else
-                    b.value=-1;
-
-            
+                setBoardvalue(b, b.position[i][0]);
                 return true;
             }
             //column win
             else if(b.position[0][i]==b.position[1][i] && b.position[1][i]==b.position[2][i] && b.position[0][i]!=' ')
             {
-                if(b.position[0][i]== 'x')
-                    b.value=1;
-                else
-                    b.value=-1;
-
+                setBoardvalue(b, b.position[0][i]);
                 return true;
             };
         }
@@ -177,9 +168,7 @@ bool chkgameover(Board &b)
     
 
     
-
-
-    //check if all cells are marked
+    //if all cells are marked without any winning side, that's a draw
     if (all_of(&b.position[0][0], &b.position[2][2], [](char x){return x!=' ';}))
     {
         b.value=0;
@@ -295,7 +284,7 @@ int main(int argc, const char * argv[]) {
     //only start if game is not over
     bool gameover = chkgameover(b1);
     
-    //need to rewrite this section
+    //play untill game over
     while(gameover==false)
     {
         b1.show_board();
