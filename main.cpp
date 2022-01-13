@@ -168,7 +168,13 @@ bool chkgameover(Board &b)
     
 
     
+<<<<<<< HEAD
     //if all cells are marked without any winning side, that's a draw
+=======
+
+
+    //if all cells are marked without any player win, that's a draw
+>>>>>>> 875fea8d634ae085eca99f3062e0e9b0fdd079cf
     if (all_of(&b.position[0][0], &b.position[2][2], [](char x){return x!=' ';}))
     {
         b.value=0;
